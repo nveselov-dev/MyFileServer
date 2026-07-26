@@ -1,7 +1,6 @@
 const { Router } = require('express');
 const { checkFile, listFiles } = require('../utils/fileUtils.js');
-const { createFilesHtml, createJokesHtml } = require('../utils/htmlUtils.js');
-const fs = require('fs');
+const { createFilesHtml, createJokesHtml, createCatImageHtml } = require('../utils/htmlUtils.js');
 
 const router = Router();
 
@@ -13,6 +12,20 @@ router.get('/jokes', async (req, res) => {
         const dstHtml = createJokesHtml(srcHtml);
 
         res.send(dstHtml);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+})
+
+router.get('/cat', async (req, res) => {
+    try {
+        const response = await fetch("https://api.thecatapi.com/v1/images/search");
+        const data = await response.json();
+        const catImageUrl = data[0].url;
+
+        const html = createCatImageHtml(catImageUrl);
+
+        res.send(html);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

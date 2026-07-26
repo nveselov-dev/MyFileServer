@@ -70,4 +70,18 @@ function createJokesHtml(src) {
     return html;
 }
 
-module.exports = { createFilesHtml, createJokesHtml };
+function createCatImageHtml(catImageUrl) {
+    const html = `
+        <DOCTYPE! html>
+        <html>
+        <head>
+            <title>Cat</title>\
+        </head>
+        <body>
+            <img src="${catImageUrl}" alt ="Random cat" width="400">
+        </body>
+        </html>`;
+
+    return html;
+}
+module.exports = { createFilesHtml, createJokesHtml, createCatImageHtml };
