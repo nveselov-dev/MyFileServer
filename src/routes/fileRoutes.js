@@ -1,6 +1,6 @@
 const { Router } = require('express');
-const { checkFile, listFiles } = require('../utils/workWithFilesInDir.js');
-const { createHtml } = require('../utils/createHtml.js');
+const { checkFile, listFiles } = require('../utils/fileUtils.js');
+const { createHtml } = require('../utils/htmlUtils.js');
 const fs = require('fs');
 
 const router = Router();
@@ -11,7 +11,7 @@ router.get('/:filename', async (req, res) => {
         const filepath = await checkFile(filename);
 
         if (filepath === null) {
-            res.status(404).json({ error: 'File not found' }); 
+            return res.status(404).json({ error: 'File not found' }); 
         }
 
         res.sendFile(filepath);

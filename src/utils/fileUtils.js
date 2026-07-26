@@ -7,9 +7,8 @@ async function checkFile(filename) {
     const filepath = path.join(FILES_DIR, filename);
 
     const resolvedPath = path.resolve(filepath);
-    const resolvedDir = path.resolve(FILES_DIR);
 
-    if (!resolvedPath.startsWith(resolvedDir)) {
+    if (!resolvedPath.startsWith(FILES_DIR)) {
         return null;
     }
 

@@ -1,9 +1,11 @@
-const dotenv = require('dotenv');
-const process = require('process');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-dotenv.config();
+const rootDir = path.join(__dirname, '..');
 
-const FILES_DIR = process.env.FILES_DIR || "static";
-const PORT = process.env.PORT || 8080;
-
-module.exports = { FILES_DIR, PORT };
+module.exports = {
+    PORT: process.env.PORT || 8080,
+    FILES_DIR: process.env.FILES_DIR 
+        ? path.join(rootDir, process.env.FILES_DIR) 
+        : path.join(rootDir, 'static')
+};
