@@ -1,0 +1,31 @@
+﻿{
+  "name": "Тестовые данные",
+  "version": "1.0.0",
+  "description": "Пример JSON файла для тестирования сервера",
+  "users": [
+    {
+      "id": 1,
+      "name": "Иван Иванов",
+      "email": "ivan@example.com",
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Мария Петрова",
+      "email": "maria@example.com",
+      "active": false
+    },
+    {
+      "id": 3,
+      "name": "Алексей Сидоров",
+      "email": "alexey@example.com",
+      "active": true
+    }
+  ],
+  "settings": {
+    "theme": "dark",
+    "language": "ru",
+    "notifications": true
+  },
+  "created": "2026-07-26T09:15:32Z"
+}
