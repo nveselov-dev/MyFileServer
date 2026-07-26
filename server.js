@@ -1,6 +1,6 @@
 const express = require('express');
 const router = require('./src/routes/fileRoutes');
-const { PORT } = require('./src/config/config');
+const { PORT, FILES_DIR } = require('./src/config/config');
 
 const app = express();
 

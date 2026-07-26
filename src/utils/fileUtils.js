@@ -7,8 +7,9 @@ async function checkFile(filename) {
     const filepath = path.join(FILES_DIR, filename);
 
     const resolvedPath = path.resolve(filepath);
+     const resolvedDir = path.resolve(FILES_DIR);
 
-    if (!resolvedPath.startsWith(FILES_DIR)) {
+    if (!resolvedPath.startsWith(resolvedDir)) {
         return null;
     }
 
@@ -22,7 +23,8 @@ async function checkFile(filename) {
 
 async function listFiles() {
     try {
-        const entries = await fs.readdir(FILES_DIR, { withFileTypes: true });
+        const resolvedDir = path.resolve(FILES_DIR);
+        const entries = await fs.readdir(resolvedDir, { withFileTypes: true });
 
         const files = entries
         .filter(entry => entry.isFile())
