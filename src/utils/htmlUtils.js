@@ -84,4 +84,41 @@ function createCatImageHtml(catImageUrl) {
 
     return html;
 }
-module.exports = { createFilesHtml, createJokesHtml, createCatImageHtml };
+
+function createWeatherHtml(weatherData, city) {
+    const temp = Math.round(weatherData.current_weather.temperature);
+    const windSpeed = weatherData.current_weather.windspeed;
+
+    const weatherCode = weatherData.current_weather.weathercode;
+    let description = 'Ясно';
+    if (weatherCode > 0 && weatherCode <= 3) description = 'Облачно';
+    else if (weatherCode >= 45 && weatherCode <= 48) description = 'Туман';
+    else if (weatherCode >= 51 && weatherCode <= 67) description = 'Дождь';
+    else if (weatherCode >= 71 && weatherCode <= 77) description = 'Снег';
+    else if (weatherCode >= 95) description = 'Гроза';
+
+    const iconUrl = `https://openweathermap.org/img/wn/${weatherCode < 3 ? '01d' : weatherCode < 50 ? '03d' : '10d'}@2x.png`;
+
+    const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Погода</title>
+            </head>
+            <body>
+                <h1>Погода в городе: ${city}</h1>
+                <img src="${iconUrl}" alt="Погодная иконка" width="100">
+                <h2>Температура: ${temp}°C</h2>
+                <p><strong>Описание:</strong> ${description}</p>
+                <p><strong>Ветер:</strong> ${windSpeed} км/ч</p>
+                <br>
+                <a href="/">Назад к файлам</a>
+            </body>
+            </html>
+        `;
+
+    return html;
+}
+
+module.exports = { createFilesHtml, createJokesHtml, createCatImageHtml, createWeatherHtml };
