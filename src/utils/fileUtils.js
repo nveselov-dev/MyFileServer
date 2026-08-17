@@ -32,6 +32,7 @@ async function listFiles() {
 
         return files;
     } catch (err) {
+        console.error('Error listing files:', err);
         return [];
     }
 }
