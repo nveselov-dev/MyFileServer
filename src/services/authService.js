@@ -10,7 +10,7 @@ class AuthService {
         }
 
         const existingUser = await this.userRepository.findByUsername(username);
-        if (!existingUser) {
+        if (existingUser) {
             throw new Error('User already exists');
         }
 

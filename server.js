@@ -6,7 +6,7 @@ const router = require('./src/routes/fileRoutes');
 const { PORT, SESSION_SECRET } = require('./src/config/config');
 const UserRepository = require('./src/repositories/UserRepository');
 const AuthService = require('./src/services/AuthService');
-const passport = require("passport/lib/authenticator");
+const passport = require("passport");
 const app = express();
 
 app.use(express.json());
