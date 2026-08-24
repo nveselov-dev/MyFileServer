@@ -26,11 +26,9 @@ async function listFiles() {
         const resolvedDir = path.resolve(FILES_DIR);
         const entries = await fs.readdir(resolvedDir, { withFileTypes: true });
 
-        const files = entries
-        .filter(entry => entry.isFile())
-        .map(entry => entry.name);
-
-        return files;
+        return entries
+            .filter(entry => entry.isFile())
+            .map(entry => entry.name);
     } catch (err) {
         console.error('Error listing files:', err);
         return [];

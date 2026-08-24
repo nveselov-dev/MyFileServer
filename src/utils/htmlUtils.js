@@ -46,7 +46,7 @@ function createMainPageHtml(files) {
 
 function createCatImageHtml(catImageUrl) {
     const html = `
-        <DOCTYPE! html>
+        <!DOCTYPE html>
         <html>
         <head>
             <title>Cat</title>\

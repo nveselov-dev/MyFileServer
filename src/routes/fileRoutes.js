@@ -1,6 +1,9 @@
 const { Router } = require('express');
 const { checkFile, listFiles } = require('../utils/fileUtils.js');
 const { createMainPageHtml, createCatImageHtml, createWeatherHtml, createNavHtml, escapeHtml } = require('../utils/htmlUtils.js');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
 
 const router = Router();
 
