@@ -15,7 +15,7 @@ class UserRepository {
 
         const passwordHash = await bcrypt.hash(password, this.saltRounds);
 
-        const result = this.pool.query(
+        const result = await this.pool.query(
             `INSERT INTO ${this.tableName} (username, passwordHash)
              VALUES ($1, $2) RETURNING id, username, createdAt`,
             [username, passwordHash]);

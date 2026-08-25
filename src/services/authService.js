@@ -4,9 +4,13 @@ class AuthService {
         this.passport = passport;
     }
 
-    async register(username, password){
-        if (!username || !password){
+    async register(username, password, confirmPassword) {
+        if (!username || !password || !confirmPassword) {
             throw new Error('Username and password are required');
+        }
+
+        if (password !== confirmPassword) {
+            throw new Error('Passwords do not match');
         }
 
         const existingUser = await this.userRepository.findByUsername(username);
@@ -15,6 +19,23 @@ class AuthService {
         }
 
         return await this.userRepository.create(username, password);
+    }
+
+    async changePassword(userId, oldPassword, newPassword, confirmNewPassword){
+        if (newPassword !== confirmNewPassword) {
+            throw new Error('Passwords do not match');
+        }
+
+        if (newPassword === oldPassword) {
+            throw new Error('New password require');
+        }
+        const user = await this.userRepository.findById(userId);
+
+        if (!user || !await this.userRepository.validatePassword(oldPassword, user.passwordHash)) {
+            throw new Error('Invalid username or password');
+        }
+
+        return await this.userRepository.updatePassword(userId, newPassword);
     }
 
     setupPassport() {
