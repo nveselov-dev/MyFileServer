@@ -13,12 +13,14 @@ class AuthService {
             throw new Error('Passwords do not match');
         }
 
-        const existingUser = await this.userRepository.findByUsername(username);
-        if (existingUser) {
-            throw new Error('User already exists');
+        try {
+            return await this.userRepository.create(username, password);
+        } catch (error) {
+            if (error.message.includes('Username already exists') || error.code === '23505') {
+                throw new Error('Username already exists');
+            }
+            throw error;
         }
-
-        return await this.userRepository.create(username, password);
     }
 
     async changePassword(userId, oldPassword, newPassword, confirmNewPassword){
@@ -27,7 +29,7 @@ class AuthService {
         }
 
         if (newPassword === oldPassword) {
-            throw new Error('New password require');
+            throw new Error('New password should not match');
         }
         const user = await this.userRepository.findById(userId);
 

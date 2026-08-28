@@ -4,37 +4,19 @@ const { createMainPageHtml, createCatImageHtml, createWeatherHtml, createNavHtml
 
 const router = Router();
 
-function renderError(res, statusCode, message) {
-    res.status(statusCode).send(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <title>Ошибка ${statusCode}</title>
-        </head>
-        <body>
-            ${createNavHtml()}
-            <h1>Ошибка ${statusCode}</h1>
-            <p style="color: red;">${escapeHtml(message)}</p>
-            <br>
-            <a href="/">На главную</a>
-        </body>
-        </html>
-    `);
-}
-
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const files = await listFiles();
         const html = createMainPageHtml(files);
         res.send(html);
     } catch (err) {
         console.error('Error listing files:', err);
-        renderError(res, 500, 'Внутренняя ошибка сервера при чтении файлов');
+        err.status = 500;
+        next(err);
     }
 });
 
-router.get('/weather', async (req, res) => {
+router.get('/weather', async (req, res, next) => {
     try {
         const geoResponse = await fetch('http://ip-api.com/json/');
         if (!geoResponse.ok) throw new Error('Ошибка гео-сервиса');
@@ -61,11 +43,12 @@ router.get('/weather', async (req, res) => {
         res.send(html);
     } catch (err) {
         console.error('Weather Error:', err);
-        renderError(res, 500, 'Не удалось загрузить данные о погоде');
+        err.status = 500;
+        next(err);
     }
 });
 
-router.get('/cat', async (req, res) => {
+router.get('/cat', async (req, res, next) => {
     try {
         const response = await fetch("https://api.thecatapi.com/v1/images/search");
         if (!response.ok) {
@@ -78,11 +61,12 @@ router.get('/cat', async (req, res) => {
         res.send(html);
     } catch (err) {
         console.error('Cat Error:', err);
-        renderError(res, 500, 'Не удалось загрузить изображение кота');
+        err.status = 500;
+        next(err);
     }
 });
 
-router.get('/jokes', async (req, res) => {
+router.get('/jokes', async (req, res, next) => {
     try {
         const response = await fetch("https://v2.jokeapi.dev/joke/Any?amount=5");
         if (!response.ok) {
@@ -101,39 +85,51 @@ router.get('/jokes', async (req, res) => {
         }).join('\n');
 
         const html = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <title>Анекдоты</title>
-            </head>
-            <body>
-                ${createNavHtml()}
-                <h1>5 Случайных анекдотов:</h1>
-                ${jokesHtml}
-            </body>
-            </html>
-        `;
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Анекдоты</title>
+        </head>
+        <body>
+            <nav>
+                <a href="/">Файлы</a> | 
+                <a href="/weather">Погода</a> | 
+                <a href="/cat">Котик</a> | 
+                <a href="/jokes">Анекдоты</a> |
+                <a href="/change-password">Сменить пароль</a> |
+                <a href="/logout">Выход</a>
+            </nav>
+            <hr>
+            <h1>10 случайных анекдотов:</h1>
+            ${jokesHtml}
+        </body>
+        </html>
+    `;
         res.send(html);
     } catch (err) {
         console.error('Jokes Error:', err);
-        renderError(res, 500, 'Не удалось загрузить анекдоты. Попробуйте позже.');
+        err.status = 500;
+        next(err);
     }
 });
 
-router.get('/:filename', async (req, res) => {
+router.get('/:filename', async (req, res, next) => {
     try {
         const filename = req.params.filename;
         const filepath = await checkFile(filename);
 
         if (filepath === null) {
-            return renderError(res, 404, 'Файл не найден или доступ запрещён');
+            const error = new Error('File not found');
+            error.status = 404;
+            return next(error);
         }
 
         res.sendFile(filepath);
     } catch (err) {
         console.error('File Error:', err);
-        renderError(res, 500, 'Внутренняя ошибка сервера при чтении файла');
+        err.status = 500;
+        next(err);
     }
 });
 

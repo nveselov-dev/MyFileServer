@@ -6,33 +6,23 @@ module.exports = function(authService) {
     const router = express.Router();
 
     router.get('/register', (req, res) => {
-        res.sendFile(path.join(__dirname, '../../views/register.html'));
+        res.sendFile(path.join(__dirname, '../views/register.html'));
     });
 
-    router.post('/register', async (req, res) => {
+    router.post('/register', async (req, res, next) => {
         try {
             const { username, password, confirmPassword } = req.body;
 
             await authService.register(username, password, confirmPassword);
             res.redirect('/login?registered=true');
         } catch (error) {
-            res.status(400).send(`
-                <!DOCTYPE html>
-                <html>
-                <head><meta charset="utf-8"><title>Ошибка регистрации</title></head>
-                <body>
-                    <h1>Ошибка регистрации</h1>
-                    <p style="color: red;">${error.message}</p>
-                    <a href="/register">Попробовать снова</a> | 
-                    <a href="/login">Войти</a>
-                </body>
-                </html>
-            `);
+            error.status = 400;
+            next(error);
         }
     });
 
     router.get('/login', (req, res) => {
-        res.sendFile(path.join(__dirname, '../../views/login.html'));
+        res.sendFile(path.join(__dirname, '../views/login.html'));
     });
 
     router.post('/login', async (req, res, next) => {
@@ -52,16 +42,17 @@ module.exports = function(authService) {
     });
 
     router.get('/change-password', ensureAuthenticated, (req, res) => {
-        res.sendFile(path.join(__dirname, '../../views/change-password.html'));
+        res.sendFile(path.join(__dirname, '../views/change-password.html'));
     });
 
-    router.post('/change-password', ensureAuthenticated, async (req, res) => {
+    router.post('/change-password', ensureAuthenticated, async (req, res, next) => {
         try {
             const { oldPassword, newPassword, confirmNewPassword } = req.body;
             await authService.changePassword(req.user.id, oldPassword, newPassword, confirmNewPassword);
             res.send('<h1>Пароль успешно изменён</h1><a href="/">На главную</a>');
         } catch (error) {
-            res.status(400).send(`<h1>Ошибка</h1><p style="color:red;">${error.message}</p><a href="/change-password">Назад</a>`);
+           error.status = 400;
+           next(error);
         }
     });
 

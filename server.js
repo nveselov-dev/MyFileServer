@@ -30,6 +30,42 @@ authService.setupPassport();
 const authRoutes = require("./src/routes/authRoutes")(authService);
 app.use("/", authRoutes);
 
-app.use('/', ensureAuthenticated, router);
+app.use(ensureAuthenticated);
 
-app.listen(PORT, () => {console.log(`Server listening on ${PORT}`)});
+app.use('/', router);
+
+app.use((err, req, res, next) => {
+    console.error('Global error handler:', err);
+
+    const status = err.status || 500;
+    const errorMessage = 'Internal Server Error';
+
+    res.status(status).send(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"><title>Ошибка ${status}</title></head>
+        <body>
+            <h1>Произошла ошибка</h1>
+            <p style="color: red;">${errorMessage}</p>
+            <a href="/">На главную</a>
+        </body>
+        </html>
+    `);
+});
+
+app.use((req, res) => {
+    res.status(404).send(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"><title>404</title></head>
+        <body>
+            <h1>Страница не найдена</h1>
+            <a href="/">На главную</a>
+        </body>
+        </html>
+    `);
+});
+
+app.listen(PORT, () => {
+    console.log(`Server listening on http://localhost:${PORT}`);
+});

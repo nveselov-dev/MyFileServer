@@ -16,16 +16,16 @@ class UserRepository {
         const passwordHash = await bcrypt.hash(password, this.saltRounds);
 
         const result = await this.pool.query(
-            `INSERT INTO ${this.tableName} (username, passwordHash)
-             VALUES ($1, $2) RETURNING id, username, createdAt`,
+            `INSERT INTO ${this.tableName} (username, password_hash)
+             VALUES ($1, $2) RETURNING id, username, created_at`,
             [username, passwordHash]);
 
         return result.rows[0];
     }
 
     async findByUsername(username) {
-        const result = this.pool.query(
-            `SELECT id, username, passwordHash, createdAt
+        const result = await this.pool.query(
+            `SELECT id, username, password_hash, created_at
              FROM ${this.tableName}
              WHERE username = $1`,
             [username]
@@ -36,7 +36,7 @@ class UserRepository {
 
     async findById(id) {
         const result = await this.pool.query(
-            `SELECT id, username, passwordHash, createdAt
+            `SELECT id, username, password_hash, created_at
              FROM ${this.tableName}
              WHERE id = $1`,
             [id]
@@ -54,7 +54,7 @@ class UserRepository {
 
         const result = await this.pool.query(
             `UPDATE ${this.tableName}
-             SET passwordHash = $1,
+             SET password_hash = $1,
                  updated_at = CURRENT_TIMESTAMP
              WHERE id = $2 RETURNING id, username`,
             [passwordHash, userId]

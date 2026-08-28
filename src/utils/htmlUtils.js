@@ -49,12 +49,24 @@ function createCatImageHtml(catImageUrl) {
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Cat</title>\
+            <meta charset="utf-8">
+            <title>Котик</title>
         </head>
         <body>
-            <img src="${catImageUrl}" alt ="Random cat" width="400">
+            <nav>
+                <a href="/">Файлы</a> | 
+                <a href="/weather">Погода</a> | 
+                <a href="/cat">Котик</a> | 
+                <a href="/jokes">Анекдоты</a> |
+                <a href="/change-password">Сменить пароль</a> |
+                <a href="/logout">Выход</a>
+            </nav>
+            <hr>
+            <h1>Случайный котик:</h1>
+            <img src="${escapeHtml(catImageUrl)}" alt="Random cat" width="400">
         </body>
-        </html>`;
+        </html>
+    `;
 
     return html;
 }
