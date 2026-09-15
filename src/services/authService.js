@@ -33,7 +33,7 @@ class AuthService {
         }
         const user = await this.userRepository.findById(userId);
 
-        if (!user || !await this.userRepository.validatePassword(oldPassword, user.passwordHash)) {
+        if (!user || !await this.userRepository.validatePassword(oldPassword, user.password_hash)) {
             throw new Error('Invalid username or password');
         }
 

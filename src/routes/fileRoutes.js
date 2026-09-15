@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { checkFile, listFiles } = require('../utils/fileUtils.js');
-const { createMainPageHtml, createCatImageHtml, createWeatherHtml, createNavHtml, escapeHtml } = require('../utils/htmlUtils.js');
+const { createMainPageHtml, createCatImageHtml, createWeatherHtml, createJokesHtml, escapeHtml } = require('../utils/htmlUtils.js');
 
 const router = Router();
 
@@ -84,28 +84,7 @@ router.get('/jokes', async (req, res, next) => {
             return `<p><strong>${index + 1}.</strong> ${safeText.replace(/\n/g, '<br>')}</p><hr>`;
         }).join('\n');
 
-        const html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <title>Анекдоты</title>
-        </head>
-        <body>
-            <nav>
-                <a href="/">Файлы</a> | 
-                <a href="/weather">Погода</a> | 
-                <a href="/cat">Котик</a> | 
-                <a href="/jokes">Анекдоты</a> |
-                <a href="/change-password">Сменить пароль</a> |
-                <a href="/logout">Выход</a>
-            </nav>
-            <hr>
-            <h1>10 случайных анекдотов:</h1>
-            ${jokesHtml}
-        </body>
-        </html>
-    `;
+        const html = createJokesHtml(jokesHtml);
         res.send(html);
     } catch (err) {
         console.error('Jokes Error:', err);

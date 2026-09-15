@@ -107,10 +107,35 @@ function createWeatherHtml(weatherData, city) {
     return html;
 }
 
+function createJokesHtml(jokesHtml) {
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Анекдоты</title>
+        </head>
+        <body>
+            <nav>
+                <a href="/">Файлы</a> | 
+                <a href="/weather">Погода</a> | 
+                <a href="/cat">Котик</a> | 
+                <a href="/jokes">Анекдоты</a> |
+                <a href="/change-password">Сменить пароль</a> |
+                <a href="/logout">Выход</a>
+            </nav>
+            <hr>
+            <h1>10 случайных анекдотов:</h1>
+            ${jokesHtml}
+        </body>
+        </html>
+    `;
+}
 module.exports = {
     createMainPageHtml,
     createCatImageHtml,
     createWeatherHtml,
     createNavHtml,
-    escapeHtml
+    escapeHtml,
+    createJokesHtml
 };
