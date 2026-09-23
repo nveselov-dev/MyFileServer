@@ -10,15 +10,17 @@ class UserRepository {
     async create(username, password) {
         const existing = await this.findByUsername(username);
         if (existing) {
-            throw new Error('Username already exists');
+            const err = new Error('Username already exists');
+            err.status = 400;
+            throw err;
         }
 
-        const passwordHash = await bcrypt.hash(password, this.saltRounds);
+        const password_hash = await bcrypt.hash(password, this.saltRounds);
 
         const result = await this.pool.query(
             `INSERT INTO ${this.tableName} (username, password_hash)
              VALUES ($1, $2) RETURNING id, username, created_at`,
-            [username, passwordHash]);
+            [username, password_hash]);
 
         return result.rows[0];
     }

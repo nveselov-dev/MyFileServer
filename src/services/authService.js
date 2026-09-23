@@ -1,3 +1,9 @@
+const {
+    validateUsername,
+    validatePassword,
+    validatePasswordsMatch,
+} = require('../utils/validator');
+
 class AuthService {
     constructor(userRepository, passport) {
         this.userRepository = userRepository;
@@ -5,36 +11,56 @@ class AuthService {
     }
 
     async register(username, password, confirmPassword) {
-        if (!username || !password || !confirmPassword) {
-            throw new Error('Username and password are required');
-        }
-
-        if (password !== confirmPassword) {
-            throw new Error('Passwords do not match');
-        }
+        const normalizedUsername = validateUsername(username);
+        validatePassword(password);
+        validatePasswordsMatch(password, confirmPassword);
 
         try {
-            return await this.userRepository.create(username, password);
+            return await this.userRepository.create(normalizedUsername, password);
         } catch (error) {
-            if (error.message.includes('Username already exists') || error.code === '23505') {
-                throw new Error('Username already exists');
-            }
             throw error;
         }
     }
 
-    async changePassword(userId, oldPassword, newPassword, confirmNewPassword){
+    async changePassword(userId, oldPassword, newPassword, confirmNewPassword) {
+        if (typeof oldPassword !== 'string' || oldPassword.trim() === '') {
+            const err = new Error('Current password is required');
+            err.status = 400;
+            throw err;
+        }
+
+        validatePassword(newPassword);
+
+        if (typeof confirmNewPassword !== 'string' || confirmNewPassword.trim() === '') {
+            const err = new Error('New password confirmation is required');
+            err.status = 400;
+            throw err;
+        }
+
         if (newPassword !== confirmNewPassword) {
-            throw new Error('Passwords do not match');
+            const err = new Error('New passwords do not match');
+            err.status = 400;
+            throw err;
         }
 
         if (newPassword === oldPassword) {
-            throw new Error('New password should not match');
+            const err = new Error('New password must differ from current password');
+            err.status = 400;
+            throw err;
         }
-        const user = await this.userRepository.findById(userId);
 
-        if (!user || !await this.userRepository.validatePassword(oldPassword, user.password_hash)) {
-            throw new Error('Invalid username or password');
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            const err = new Error('User not found');
+            err.status = 404;
+            throw err;
+        }
+
+        const isValid = await this.userRepository.validatePassword(oldPassword, user.password_hash);
+        if (!isValid) {
+            const err = new Error('Invalid current password');
+            err.status = 400;
+            throw err;
         }
 
         return await this.userRepository.updatePassword(userId, newPassword);
@@ -45,7 +71,7 @@ class AuthService {
 
         this.passport.use(new LocalStrategy(async (username, password, done) => {
             try {
-                const user = await this.userRepository.findByUsername(username);
+                const user = await this.userRepository.findByUsername(username.trim());
 
                 if (!user) {
                     return done(null, false, { message: 'Invalid username or password' });

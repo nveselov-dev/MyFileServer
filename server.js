@@ -4,8 +4,8 @@ const ensureAuthenticated = require('./src/middlewares/auth');
 const pool = require('./src/db/db');
 const router = require('./src/routes/fileRoutes');
 const { PORT, SESSION_SECRET } = require('./src/config/config');
-const UserRepository = require('./src/repositories/UserRepository');
-const AuthService = require('./src/services/AuthService');
+const UserRepository = require('./src/repositories/userRepository');
+const AuthService = require('./src/services/authService');
 const passport = require("passport");
 const app = express();
 
@@ -38,15 +38,19 @@ app.use((err, req, res, next) => {
     console.error('Global error handler:', err);
 
     const status = err.status || 500;
-    const errorMessage = 'Internal Server Error';
+    let userMessage = 'Internal Server Error';
+
+    if (status >= 400 && status < 500) {
+        userMessage = err.message;
+    }
 
     res.status(status).send(`
         <!DOCTYPE html>
         <html>
         <head><meta charset="utf-8"><title>Ошибка ${status}</title></head>
         <body>
-            <h1>Произошла ошибка</h1>
-            <p style="color: red;">${errorMessage}</p>
+            <h1>Ошибка ${status}</h1>
+            <p style="color: red;">${userMessage}</p>
             <a href="/">На главную</a>
         </body>
         </html>
